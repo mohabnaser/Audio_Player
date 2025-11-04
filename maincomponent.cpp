@@ -2,8 +2,11 @@
 
 MainComponent::MainComponent()
 {
-    addAndMakeVisible(player1);
-    setSize(700, 450);
+    player = std::make_unique<PlayerGUI>("Player 1");
+    addAndMakeVisible(player.get());
+
+    applyModernStyling();
+
     setAudioChannels(0, 2);
 }
 
@@ -12,27 +15,43 @@ MainComponent::~MainComponent()
     shutdownAudio();
 }
 
+void MainComponent::applyModernStyling()
+{
+    juce::LookAndFeel::getDefaultLookAndFeel().setDefaultSansSerifTypefaceName("Arial");
+}
+
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
+    if (player) player->prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    player1.getNextAudioBlock(bufferToFill);
+    bufferToFill.clearActiveBufferRegion();
+
+    if (player)
+    {
+        player->getNextAudioBlock(bufferToFill);
+    }
 }
 
 void MainComponent::releaseResources()
 {
-    player1.releaseResources();
+    if (player) player->releaseResources();
 }
 
 void MainComponent::resized()
 {
-    player1.setBounds(getLocalBounds());
+    player->setBounds(getLocalBounds());
 }
 
 void MainComponent::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::darkgrey);
+    juce::ColourGradient gradient(
+        juce::Colour(0xff0a0a0f), 0.0f, 0.0f,
+        juce::Colour(0xff151520), static_cast<float>(getWidth()), static_cast<float>(getHeight()),
+        false
+    );
+    g.setGradientFill(gradient);
+    g.fillAll();
 }

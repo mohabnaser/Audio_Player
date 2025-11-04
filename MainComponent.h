@@ -11,11 +11,14 @@ public:
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
+
     void resized() override;
     void paint(juce::Graphics& g) override;
 
 private:
-    PlayerGUI player1;
+    std::unique_ptr<PlayerGUI> player; 
+
+    void applyModernStyling();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
